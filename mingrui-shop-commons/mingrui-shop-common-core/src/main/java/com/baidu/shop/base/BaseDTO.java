@@ -3,7 +3,6 @@ package com.baidu.shop.base;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.util.StringUtils;
 
 @Data
 @ApiModel(value = "BaseDTO用于数据传输 其他Dao需要继承此类")

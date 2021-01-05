@@ -7,13 +7,21 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+fdds:
+  so-timeout: 1501
+  connect-timeout: 601
+  thumb-image:
+    width: 60
+    height: 60
+  tracker-list:
+    - 49.232.110.103:22122
 
-mingrui:
-  upload:
-    path:
-      windows: D:\\images
-      linux: /shenyaqi/images
-    img:
-      host: http://image.mrshop.com
+  mingrui:
+    upload:
+      path:
+        windows: D:\\images
+        linux: /hjh/images
+      img:
+        host: http://49.232.110.103/
 
 
