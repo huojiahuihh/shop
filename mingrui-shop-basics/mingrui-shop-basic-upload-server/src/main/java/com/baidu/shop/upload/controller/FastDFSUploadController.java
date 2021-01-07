@@ -38,15 +38,13 @@ public class FastDFSUploadController {
         String filename = file.getOriginalFilename();//文件名
         String ex = filename.substring(filename.lastIndexOf(".") + 1);//文件后缀名
         // 上传并且生成缩略图
-        StorePath storePath = this.storageClient.uploadImageAndCrtThumbImage(
-                inputStream, file.getSize(), ex, null);//上传
+        StorePath storePath = this.storageClient.uploadImageAndCrtThumbImage(inputStream, file.getSize(), ex, null);//上传
         // 带分组的路径
         log.info("上传图片全路径:{}", storePath.getFullPath());
         // 不带分组的路径
         log.info("上传图片路径:{}", storePath.getPath());
         // 获取缩略图路径
-        String path =
-                thumbImageConfig.getThumbImagePath(storePath.getFullPath());
+        String path = thumbImageConfig.getThumbImagePath(storePath.getFullPath());
         log.info("缩略图路径:{}", path);
         return new Result<String>(HTTPStatus.OK,"上传成功",imgHost + path);
     }

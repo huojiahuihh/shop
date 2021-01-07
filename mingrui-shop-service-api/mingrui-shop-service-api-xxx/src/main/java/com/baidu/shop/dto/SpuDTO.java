@@ -8,6 +8,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @ApiModel(value = "spu数据传出DTO")
 @Data
@@ -55,4 +56,14 @@ public class SpuDTO extends BaseDTO {
     //不需要验证,新增时直接设置默认值,修改时使用java代码赋值
     @ApiModelProperty(value = "最后修改时间")
     private Date lastUpdateTime;
+
+    private String brandName;
+
+    private String cateGoryName;
+
+    @ApiModelProperty(value = "大字段数据")
+    private SpuDetailDTO spuDetail;
+
+    @ApiModelProperty(value = "sku属性数据集合")
+    private List<SkuDTO> skus;
 }

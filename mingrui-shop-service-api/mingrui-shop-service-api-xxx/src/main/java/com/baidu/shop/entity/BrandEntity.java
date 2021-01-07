@@ -14,6 +14,7 @@ import javax.persistence.Table;
 public class BrandEntity {
 
     @Id
+    //主键
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

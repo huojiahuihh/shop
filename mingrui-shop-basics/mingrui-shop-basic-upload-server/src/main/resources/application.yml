@@ -7,7 +7,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-fdds:
+fdfs:
   so-timeout: 1501
   connect-timeout: 601
   thumb-image:
@@ -16,12 +16,14 @@ fdds:
   tracker-list:
     - 49.232.110.103:22122
 
-  mingrui:
-    upload:
-      path:
-        windows: D:\\images
-        linux: /hjh/images
-      img:
-        host: http://49.232.110.103/
+
+
+mingrui:
+  upload:
+    path:
+      windows: D:\\images
+      linux: /hh/images
+    img:
+      host: http://49.232.110.103/
 
 
