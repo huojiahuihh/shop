@@ -8,6 +8,7 @@ import io.swagger.models.auth.In;
 import lombok.Data;
 import sun.plugin2.message.Message;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @ApiModel(value = "规格参数数据传输")
@@ -19,12 +20,14 @@ public class SpecParamDTO extends BaseDTO {
     private Integer id;
 
     @ApiModelProperty(value = "分类id",example = "1")
+    @NotNull(message = "分类Id不能为空",groups = {MingruiOperation.Add.class,MingruiOperation.Update.class})
     private Integer cid;
 
     @ApiModelProperty(value = "规格组id",example = "1")
     private Integer groupId;
 
     @ApiModelProperty(value = "规格参数名称")
+    @NotEmpty(message = "规格参数名称不能为空",groups = {MingruiOperation.Add.class,MingruiOperation.Update.class})
     private String name;
 
     @ApiModelProperty(value = "是否是数字类型参数",example = "0")

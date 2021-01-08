@@ -9,17 +9,19 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Api(tags = "商品分类接口")
+@Validated
 public interface CategoryService {
     @ApiOperation(value = "通过查询商品分类")
     @GetMapping(value = "category/list")
-    Result<List<CategoryEntity>> getCategoryByPid(Integer pid);
+    Result<List<CategoryEntity>> getCategoryByPid(@NotNull Integer pid);
 
     @ApiOperation(value ="通过id删除分类")
     @DeleteMapping(value = "category/del")
-    Result<JsonObject> delCategory(Integer id);
+    Result<JsonObject> delCategory(@NotNull Integer id);
 
     @ApiOperation(value = "修改分类")
     @PutMapping(value = "category/edit")
@@ -31,4 +33,4 @@ public interface CategoryService {
 
     @ApiOperation(value = "根据品牌id查询分类的相关数据")
     @GetMapping(value = "category/brand")
-    public Result<List<CategoryEntity>> getBrandById(Integer brandId);}
+    public Result<List<CategoryEntity>> getBrandById(@NotNull Integer brandId);}

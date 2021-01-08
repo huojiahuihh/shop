@@ -36,7 +36,7 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
     @Override
     public Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO) {
 
-        //mybatis 分页插件 mtbatis执行器
+        //mybatis 分页插件 mybatis执行器
         PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
         //排序
         //第四种办法

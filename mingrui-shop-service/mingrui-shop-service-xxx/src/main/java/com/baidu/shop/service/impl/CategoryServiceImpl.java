@@ -56,13 +56,11 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
 //        Example.Criteria criteria = example.createCriteria();
 //        criteria.andEqualTo("parentId",categoryEntity.getParentId());
 
-
         //判断是否有品牌类的关系分类表
         Example example1 = new Example(BrandCategoryEntity.class);
         example1.createCriteria().andEqualTo("parentId",categoryEntity.getParentId());
         List<BrandCategoryEntity> brandCategoryEntities = categoryBrandMapper.selectByExample(example1);
         if (brandCategoryEntities.size()>0) return this.setResultError("当前节点绑定品牌,请先删除品牌后再删该节点");
-
 
         //根据删除的parentId为节点 查询父级节点的状态
         if (list.size() <=1){
@@ -102,6 +100,4 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
         List<CategoryEntity> byBrandId = mapper.getByBrandId(brandId);
         return this.setResultSuccess(byBrandId);
     }
-
-
 }

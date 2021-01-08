@@ -14,6 +14,7 @@ import com.baidu.shop.utils.BaiduBeanUtil;
 import com.baidu.shop.utils.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.JsonObject;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
@@ -100,7 +101,8 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     public Result<JSONObject> saveGoods(SpuDTO spuDTO) {
 
         //要是直接 new date 的话 CreateTime  和  LastUpdateTime 两次的时间有差别 不一致
-        Date date = new Date();
+        //加这个final 是为了防止 时间被修改
+        final Date date = new Date();
         //新增spu  新增spu的时候返回主键
         SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
         spuEntity.setSaleable(1);
@@ -116,21 +118,8 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         spuDetailMapper.insertSelective(spuDetailEntity);
 
         //新增sku
-        List<SkuDTO> skus = spuDTO.getSkus();
-        skus.stream().forEach(skuDTO -> {
-
-            SkuEntity skuEntity = BaiduBeanUtil.copyProperties(skuDTO, SkuEntity.class);
-            skuEntity.setSpuId(spuEntity.getId());
-            skuEntity.setCreateTime(date);
-            skuEntity.setLastUpdateTime(date);
-            skuMapper.insertSelective(skuEntity);
-
-            //新增stock
-            StockEntity stockEntity = new StockEntity();
-            stockEntity.setSkuId(skuEntity.getId());
-            stockEntity.setStock(skuDTO.getStock());
-            stockMapper.insertSelective(stockEntity);
-        });
+        //因为和修改用到的代码重复了  所以提出来了  saveSkuAndStockInfo
+        this.saveSkuAndStockInfo(spuDTO,spuEntity.getId(),date);
         return this.setResultSuccess();
     }
 
@@ -148,5 +137,85 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         return this.setResultSuccess(list);
     }
 
+    @Override
+    @Transactional
+    public Result<JsonObject> editGoods(SpuDTO spuDTO) {
+        final Date date = new Date();
+        //修改 spu
+        SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
+        spuEntity.setLastUpdateTime(date);
+        spuMapper.updateByPrimaryKeySelective(spuEntity);
+
+        //修改spuDetail
+        spuDetailMapper.updateByPrimaryKeySelective(BaiduBeanUtil.copyProperties(spuDTO.getSpuDetail(),SpuDetailEntity.class));
+
+//        //修改sku   //通过spuId查询sku的信息   // 删除完之后再新增
+//        Example example = new Example(SkuEntity.class);
+//        example.createCriteria().andEqualTo("spuId",spuDTO);
+//        List<SkuEntity> skuEntities = skuMapper.selectByExample(example);
+//
+//        //得到sku集合
+//        List<Long> skuIdList = skuEntities.stream().map(skuEntity -> skuEntity.getId()).collect(Collectors.toList());
+//        skuMapper.deleteByIdList(skuIdList); //通过skuId结合删除sku信息
+//        stockMapper.deleteByIdList(skuIdList); //通过skuId集合删除stock信息
+        this.deleteSkuAndStock(spuDTO.getId());
+        //新增sku
+        this.saveSkuAndStockInfo(spuDTO,spuEntity.getId(), date);
+        //修改stock
+        return this.setResultSuccess();
+    }
+
+    @Override
+    public Result<JsonObject> deleteGoods(Integer spuId) {
+        //删除spu
+        spuMapper.deleteByPrimaryKey(spuId);
+        //删除SpuDetail
+        spuMapper.deleteByPrimaryKey(spuId);
+
+//        //删除spu 和 stock
+//        //通过 spuId 查询 sku信息
+//        Example example = new Example(SkuEntity.class);
+//        example.createCriteria().andEqualTo("spuId",spuId);
+//        List<SkuEntity> skuEntities = skuMapper.selectByExample(example);
+//        //得到sku集合
+//        List<Long> skuIdList = skuEntities.stream().map(skuEntity -> skuEntity.getId()).collect(Collectors.toList());
+//        skuMapper.deleteByIdList(skuIdList);//通过skuId集合删除sku信息
+//        stockMapper.deleteByIdList(skuIdList);//通过skuId集合删除stock信息
+
+        this.deleteSkuAndStock(spuId);
+        return this.setResultSuccess();
+    }
+
+
+    //新增和修改的代码重复了 所以就提出来当做公共的代码 是页面更整洁
+    private void saveSkuAndStockInfo(SpuDTO spuDTO,Integer spuId,Date date){
+        //新增sku
+        List<SkuDTO> skus = spuDTO.getSkus();
+        skus.stream().forEach(skuDTO -> {
+
+            SkuEntity skuEntity = BaiduBeanUtil.copyProperties(skuDTO, SkuEntity.class);
+            skuEntity.setSpuId(spuId);
+            skuEntity.setCreateTime(date);
+            skuEntity.setLastUpdateTime(date);
+            skuMapper.insertSelective(skuEntity);
+
+            //新增stock
+            StockEntity stockEntity = new StockEntity();
+            stockEntity.setSkuId(skuEntity.getId());
+            stockEntity.setStock(skuDTO.getStock());
+            stockMapper.insertSelective(stockEntity);
+        });
+    }
+    private void deleteSkuAndStock(Integer spuId){
+        //删除spu 和 stock
+        //通过 spuId 查询 sku信息
+        Example example = new Example(SkuEntity.class);
+        example.createCriteria().andEqualTo("spuId",spuId);
+        List<SkuEntity> skuEntities = skuMapper.selectByExample(example);
+        //得到sku集合
+        List<Long> skuIdList = skuEntities.stream().map(skuEntity -> skuEntity.getId()).collect(Collectors.toList());
+        skuMapper.deleteByIdList(skuIdList);//通过skuId集合删除sku信息
+        stockMapper.deleteByIdList(skuIdList);//通过skuId集合删除stock信息
+    }
 
 }
