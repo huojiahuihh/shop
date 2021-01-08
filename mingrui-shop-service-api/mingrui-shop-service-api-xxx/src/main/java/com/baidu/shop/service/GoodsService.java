@@ -37,6 +37,10 @@ public interface GoodsService {
     @GetMapping(value = "goods/getSkuIdBySpuId")
     Result<List<SkuDTO>> getSkuIdBySpuId(@NotNull Integer spuId);
 
+    @ApiOperation(value = "通过spuId上下架skuId")
+    @GetMapping(value = "goods/updown")
+    Result<JsonObject> goodsUpdown(@NotNull Integer spuId);
+
     @ApiOperation(value = "修改商品")
     @PutMapping(value = "goods/save")
     Result<JsonObject> editGoods(@Validated({MingruiOperation.Update.class})@RequestBody SpuDTO spuDTO);

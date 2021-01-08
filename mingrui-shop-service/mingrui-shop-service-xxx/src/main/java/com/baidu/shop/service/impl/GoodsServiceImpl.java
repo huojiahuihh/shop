@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +47,14 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 
     @Resource
     private StockMapper stockMapper;
+
+    @Override
+    public Result<JsonObject> goodsUpdown(@NotNull Integer spuId) {
+        SpuEntity spuEntity = spuMapper.selectByPrimaryKey(spuId);
+        spuEntity.setSaleable(spuEntity.getSaleable()==1?0:1);
+        spuMapper.updateByPrimaryKeySelective(spuEntity);
+        return this.setResultSuccess();
+    }
 
     @Override
     public Result<List<SpuDTO>> getSpuInfo(SpuDTO spuDTO) {
