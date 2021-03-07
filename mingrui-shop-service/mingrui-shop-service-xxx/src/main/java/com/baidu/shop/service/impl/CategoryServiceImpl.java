@@ -2,6 +2,7 @@ package com.baidu.shop.service.impl;
 
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
+import com.baidu.shop.entity.BrandEntity;
 import com.baidu.shop.service.CategoryService;
 import com.baidu.shop.entity.BrandCategoryEntity;
 import com.baidu.shop.entity.CategoryEntity;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class CategoryServiceImpl extends BaseApiService implements CategoryService {
@@ -99,5 +102,13 @@ public class CategoryServiceImpl extends BaseApiService implements CategoryServi
     public Result<List<CategoryEntity>> getBrandById(Integer brandId) {
         List<CategoryEntity> byBrandId = mapper.getByBrandId(brandId);
         return this.setResultSuccess(byBrandId);
+    }
+
+
+    @Override//通过id集合查询分类信息
+    public Result<List<CategoryEntity>> getCategoryByIdList(String ids) {
+        List<Integer> idList = Arrays.asList(ids.split(",")).stream().map(idStr -> Integer.valueOf(idStr)).collect(Collectors.toList());
+        List<CategoryEntity> categoryEntities = mapper.selectByIdList(idList);
+        return this.setResultSuccess(categoryEntities);
     }
 }

@@ -32,6 +32,15 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
     @Resource
     private BrandMapper mapper;
 
+
+    @Override
+    public Result<List<BrandEntity>> getBrandByIdList(String ids) {
+        List<Integer> idList = Arrays.asList(ids.split(",")).stream().map(idStr -> Integer.valueOf(idStr)).collect(Collectors.toList());
+        List<BrandEntity> brandEntities = mapper.selectByIdList(idList);
+
+        return this.setResultSuccess(brandEntities);
+    }
+
     //查询
     @Override
     public Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO) {
@@ -127,6 +136,8 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
         List<BrandEntity> list = mapper.getBrandInfoByCategoryId(cid);
         return this.setResultSuccess(list);
     }
+
+
 
 
     //提出来公共的部分 使代码更简洁

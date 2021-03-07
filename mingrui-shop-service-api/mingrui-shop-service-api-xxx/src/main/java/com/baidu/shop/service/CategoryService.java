@@ -1,11 +1,13 @@
 package com.baidu.shop.service;
 
 import com.baidu.shop.base.Result;
+import com.baidu.shop.entity.BrandEntity;
 import com.baidu.shop.entity.CategoryEntity;
 import com.baidu.shop.validate.group.MingruiOperation;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,4 +35,9 @@ public interface CategoryService {
 
     @ApiOperation(value = "根据品牌id查询分类的相关数据")
     @GetMapping(value = "category/brand")
-    public Result<List<CategoryEntity>> getBrandById(@NotNull Integer brandId);}
+    Result<List<CategoryEntity>> getBrandById(@NotNull Integer brandId);
+
+    @ApiOperation(value = "通过id集合查询分类信息")
+    @GetMapping(value = "category/getCategoryByIdList")
+    Result<List<CategoryEntity>> getCategoryByIdList(@RequestParam String ids);
+}

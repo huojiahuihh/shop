@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public interface GoodsService {
 
     @ApiOperation(value = "获取spu的信息")
     @GetMapping(value = "goods/getSpuInfo")
-    Result<List<SpuDTO>> getSpuInfo(SpuDTO spuDTO);
+    Result<List<SpuDTO>> getSpuInfo(@SpringQueryMap SpuDTO spuDTO);
 
     @ApiOperation(value = "新增商品")
     @PostMapping(value = "goods/save")
@@ -31,11 +32,11 @@ public interface GoodsService {
 
     @ApiOperation(value = "通过获取spu查询SpuDetail的详细信息")
     @GetMapping(value = "goods/getSpuDetailBySpuId")
-    Result<SpuDetailEntity> getSpuDetailBySpuId(@NotNull Integer spuId);
+    Result<SpuDetailEntity> getSpuDetailBySpuId(@RequestParam Integer spuId);
 
     @ApiOperation(value = "通过spuId获取skuId")
     @GetMapping(value = "goods/getSkuIdBySpuId")
-    Result<List<SkuDTO>> getSkuIdBySpuId(@NotNull Integer spuId);
+    Result<List<SkuDTO>> getSkuIdBySpuId(@NotNull @RequestParam Integer spuId);
 
     @ApiOperation(value = "通过spuId上下架skuId")
     @GetMapping(value = "goods/updown")
