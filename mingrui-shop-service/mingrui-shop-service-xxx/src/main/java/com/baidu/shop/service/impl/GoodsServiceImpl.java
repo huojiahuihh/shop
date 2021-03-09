@@ -80,6 +80,11 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         if (!StringUtils.isEmpty(spuDTO.getSort()) && !StringUtils.isEmpty(spuDTO.getOrder()))
             PageHelper.orderBy(spuDTO.getOrderBy());
 
+
+        if (ObjectUtil.isNotNull(spuDTO.getId())){
+            criteria.andEqualTo("id",spuDTO.getId());
+        }
+
         //用来查询sql
         List<SpuEntity> spuEntities = spuMapper.selectByExample(example);
 

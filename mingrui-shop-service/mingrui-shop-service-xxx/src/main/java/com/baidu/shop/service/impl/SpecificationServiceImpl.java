@@ -79,6 +79,10 @@ public class SpecificationServiceImpl extends BaseApiService implements Specific
             criteria.andEqualTo("groupId",specParamEntity.getGroupId());
         if(ObjectUtil.isNotNull(specParamEntity.getCid()))
             criteria.andEqualTo("cid",specParamEntity.getCid());
+
+        if(ObjectUtil.isNotNull(specParamDTO.getGeneric())){
+            criteria.andEqualTo("generic",specParamEntity.getGeneric());
+        }
         List<SpecParamEntity> specParamMappers = specParamMapper.selectByExample(example);
         return this.setResultSuccess(specParamMappers);
     }

@@ -45,32 +45,27 @@ public class BrandServiceImpl extends BaseApiService implements BrandService {
     @Override
     public Result<PageInfo<BrandEntity>> getBrandInfo(BrandDTO brandDTO) {
 
+        if (ObjectUtil.isNotNull(brandDTO.getPage()) && ObjectUtil.isNotNull(brandDTO.getRows())){
+            PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
+        }
         //mybatis 分页插件 mybatis执行器
-        PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
+        //PageHelper.startPage(brandDTO.getPage(),brandDTO.getRows());
         //排序
         //第四种办法
         if (!StringUtils.isEmpty(brandDTO.getSort())) PageHelper.orderBy(brandDTO.getOrderBy());
-
-//        String order="";
-//        if(!StringUtils.isEmpty(brandDTO.getOrder())){
-        //第一种 用if和else判断是降序还是升序
-//            if (Boolean.valueOf(brandDTO.getOrder())){
-//                order = "desc";
-//            }else {
-//                order = "asc";
-//            }
-        //第二种 通过三目运算 判断是用降序还是升序
-//            PageHelper.orderBy(brandDTO.getSort() + " " + (Boolean.valueOf(brandDTO.getOrder())?"desc":"asc"));
-//        }
-        //第三种
-//        PageHelper.orderBy(brandDTO.getOrderBy());
 
         //查询与分页
         BrandEntity brandEntity = new BrandEntity();
         BeanUtils.copyProperties(brandDTO,brandEntity);
 
         Example example = new Example(BrandEntity.class);
-        example.createCriteria().andLike("name","%" + brandEntity.getName() +"%");
+        Example.Criteria criteria = example.createCriteria();
+
+        if (!StringUtils.isEmpty(brandEntity.getName()))
+            criteria.andLike("name","%" + brandEntity.getName() +"%");
+        if(ObjectUtil.isNotNull(brandDTO.getId())){
+            criteria.andEqualTo("id",brandDTO.getId());
+        }
 
         List<BrandEntity> brandEntities = mapper.selectByExample(example);
         PageInfo<BrandEntity> pageInfo = new PageInfo<>(brandEntities);
