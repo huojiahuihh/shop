@@ -3,6 +3,8 @@ package com.baidu.shop.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
+import com.baidu.shop.component.MrRabbitMQ;
+import com.baidu.shop.constant.MqMessageConstant;
 import com.baidu.shop.dto.SkuDTO;
 import com.baidu.shop.dto.SpuDTO;
 import com.baidu.shop.dto.SpuDetailDTO;
@@ -15,6 +17,7 @@ import com.baidu.shop.utils.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +51,9 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     @Resource
     private StockMapper stockMapper;
 
+    @Autowired
+    private MrRabbitMQ mrRabbitMQ;
+
     @Override
     public Result<JsonObject> goodsUpdown(@NotNull Integer spuId) {
         SpuEntity spuEntity = spuMapper.selectByPrimaryKey(spuId);
@@ -61,48 +67,38 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 
         Example example = new Example(SpuEntity.class);
         Example.Criteria criteria = example.createCriteria();
-
         //判断一下是否上架  spuDTO数据传输
         if (ObjectUtil.isNotNull(spuDTO.getSaleable()) && spuDTO.getSaleable()<2){
             criteria.andEqualTo("saleable",spuDTO.getSaleable());
         }
-
         //用那个框框用来搜索查询 模糊匹配andLike
         if (!StringUtils.isEmpty(spuDTO.getTitle())){
             criteria.andLike("title","%" + spuDTO.getTitle() + "%");
         }
-
         //分页 用了 baseDTO类的方法   baseBTO是分页的工具类
         if (spuDTO.getPage() != null && spuDTO.getRows()!= null)
             PageHelper.startPage(spuDTO.getPage(),spuDTO.getRows());
-
         //排序
         if (!StringUtils.isEmpty(spuDTO.getSort()) && !StringUtils.isEmpty(spuDTO.getOrder()))
             PageHelper.orderBy(spuDTO.getOrderBy());
 
-
         if (ObjectUtil.isNotNull(spuDTO.getId())){
             criteria.andEqualTo("id",spuDTO.getId());
         }
-
         //用来查询sql
         List<SpuEntity> spuEntities = spuMapper.selectByExample(example);
-
         //商品分类 和 品牌传到前台是数字 需要用来转换一下 因为用户看不懂
         List<SpuDTO> spuDTOList = spuEntities.stream().map(spuEntity -> {
             SpuDTO spuDTO1 = BaiduBeanUtil.copyProperties(spuEntity, SpuDTO.class);
             //通过分类Id集合查询数据
             List<CategoryEntity> categoryEntities = categoryMapper.selectByIdList(Arrays.asList(spuEntity.getCid1(), spuEntity.getCid2(), spuEntity.getCid3()));
-
             //遍历结合 并且将分类名称用 "~" 拼接
             String categoryName = categoryEntities.stream().map(categoryEntity -> categoryEntity.getName()).collect(Collectors.joining("~"));
             spuDTO1.setCateGoryName(categoryName);
-
             BrandEntity brandEntity = brandMapper.selectByPrimaryKey(spuEntity.getBrandId());
             spuDTO1.setBrandName(brandEntity.getName());
             return spuDTO1;
         }).collect(Collectors.toList());
-
         //分页  这个才是分页最后的关键
         PageInfo<SpuEntity> spuEntityPageInfo = new PageInfo<>(spuEntities);
         //返回分页以后的数据
@@ -111,9 +107,18 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public Result<JSONObject> saveGoods(SpuDTO spuDTO) {
 
+        Integer spuId = this.saveGoodsTransactional(spuDTO);
+        //在新增完之后发送消息队列
+        mrRabbitMQ.send(spuId+"", MqMessageConstant.SPU_ROUT_KEY_SAVE);
+        return this.setResultSuccess();
+    }
+
+
+    @Transactional
+    public Integer saveGoodsTransactional(SpuDTO spuDTO){
         //要是直接 new date 的话 CreateTime  和  LastUpdateTime 两次的时间有差别 不一致
         //加这个final 是为了防止 时间被修改
         final Date date = new Date();
@@ -130,11 +135,10 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         SpuDetailEntity spuDetailEntity = BaiduBeanUtil.copyProperties(spuDetail, SpuDetailEntity.class);
         spuDetailEntity.setSpuId(spuEntity.getId());
         spuDetailMapper.insertSelective(spuDetailEntity);
-
         //新增sku
         //因为和修改用到的代码重复了  所以提出来了  saveSkuAndStockInfo
         this.saveSkuAndStockInfo(spuDTO,spuEntity.getId(),date);
-        return this.setResultSuccess();
+        return spuEntity.getId();
     }
 
     //获取spu查询SpuDetail的详细信息
@@ -152,8 +156,19 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     }
 
     @Override
-    @Transactional
     public Result<JsonObject> editGoods(SpuDTO spuDTO) {
+
+        Integer spuId = this.editGoodsTransactional(spuDTO);
+        //在修改完数据后发送消息队列
+        mrRabbitMQ.send(spuId+"",MqMessageConstant.SPU_ROUT_KEY_UPDATE);
+
+
+        //修改stock
+        return this.setResultSuccess();
+    }
+
+    @Transactional
+    public Integer editGoodsTransactional(SpuDTO spuDTO){
         final Date date = new Date();
         //修改 spu
         SpuEntity spuEntity = BaiduBeanUtil.copyProperties(spuDTO, SpuEntity.class);
@@ -175,8 +190,7 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
         this.deleteSkuAndStock(spuDTO.getId());
         //新增sku
         this.saveSkuAndStockInfo(spuDTO,spuEntity.getId(), date);
-        //修改stock
-        return this.setResultSuccess();
+        return spuEntity.getId();
     }
 
     @Override
@@ -197,6 +211,9 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
 //        stockMapper.deleteByIdList(skuIdList);//通过skuId集合删除stock信息
 
         this.deleteSkuAndStock(spuId);
+
+        //在删除完数据后发送队列消息
+        mrRabbitMQ.send(spuId+"",MqMessageConstant.SPU_ROUT_KEY_DELETE);
         return this.setResultSuccess();
     }
 

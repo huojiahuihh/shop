@@ -1,5 +1,6 @@
 package com.baidu.shop.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.BaseApiService;
 import com.baidu.shop.base.Result;
 import com.baidu.shop.document.GoodsDoc;
@@ -62,6 +63,27 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
 
     @Autowired
     private CategoryFeign categoryFeign;
+
+
+    @Override    //通过spuId新增数据
+    public Result<JSONObject> saveData(Integer spuId) {
+        SpuDTO spuDTO = new SpuDTO();
+        spuDTO.setId(spuId);
+        List<GoodsDoc> goodsDocs = this.esGoodsInfo(spuDTO);
+        GoodsDoc goodsDoc = goodsDocs.get(0);
+        elasticsearchRestTemplate.save(goodsDoc);
+        return this.setResultSuccess();
+    }
+
+    @Override
+    public Result<JSONObject> delData(Integer spuId) {
+        GoodsDoc goodsDoc = new GoodsDoc();
+        goodsDoc.setId(spuId.longValue());
+        elasticsearchRestTemplate.delete(goodsDoc);
+        return this.setResultSuccess();
+    }
+
+
 
     @Override
     public GoodsResponse search(String search , Integer page,String filter) {
@@ -229,6 +251,7 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
         return this.setResultSuccess();
     }
 
+
     //es中的数据初始化
     @Override
     public Result<JsonObject> initGoodsEsData() {
@@ -238,14 +261,14 @@ public class ShopElasticsearchServiceImpl extends BaseApiService implements Shop
             indexOperations.createMapping();
         }
         //查询mySql中的数据
-        List<GoodsDoc> goodsDocs = this.esGoodsInfo();
+        List<GoodsDoc> goodsDocs = this.esGoodsInfo(new SpuDTO());
         elasticsearchRestTemplate.save(goodsDocs);
         return this.setResultSuccess();
     }
 
     //    @Override
-    private List<GoodsDoc> esGoodsInfo() {
-        SpuDTO spuDTO = new SpuDTO();
+    private List<GoodsDoc> esGoodsInfo(SpuDTO spuDTO) {
+//        SpuDTO spuDTO = new SpuDTO();
         /*spuDTO.setPage(1);
         spuDTO.setRows(5);*/
 

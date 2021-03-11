@@ -28,7 +28,7 @@ public interface GoodsService {
 
     @ApiOperation(value = "新增商品")
     @PostMapping(value = "goods/save")
-    Result<JSONObject> saveGoods(@Validated({MingruiOperation.Add.class}) @RequestBody SpuDTO spuDTO);
+    Result<JSONObject> saveGoods( @RequestBody SpuDTO spuDTO);
 
     @ApiOperation(value = "通过获取spu查询SpuDetail的详细信息")
     @GetMapping(value = "goods/getSpuDetailBySpuId")
@@ -44,7 +44,7 @@ public interface GoodsService {
 
     @ApiOperation(value = "修改商品")
     @PutMapping(value = "goods/save")
-    Result<JsonObject> editGoods(@Validated({MingruiOperation.Update.class})@RequestBody SpuDTO spuDTO);
+    Result<JsonObject> editGoods(@RequestBody SpuDTO spuDTO);
 
     @ApiOperation(value = "删除商品")
     @DeleteMapping(value = "good/delete")

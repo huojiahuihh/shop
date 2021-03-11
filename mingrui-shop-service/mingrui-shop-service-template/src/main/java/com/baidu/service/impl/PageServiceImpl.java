@@ -19,19 +19,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 public class PageServiceImpl implements PageService {
 
-    @Autowired
+//    @Autowired
     private BrandFeign brandFeign;
 
-    @Autowired
+//    @Autowired
     private CategoryFeign categoryFeign;
 
-    @Autowired
+//    @Autowired
     private GoodsFeign goodsFeign;
 
-    @Autowired
+//    @Autowired
     private SpecificationFeign specificationFeign;
 
     @Override

@@ -1,6 +1,20 @@
 server:
   port: 8400
 spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    # 是否确认回调
+    publisher-confirm-type: correlated
+    # 是否返回回调
+    publisher-returns: true
+    virtual-host: /
+    # 手动确认
+    listener:
+      simple:
+        acknowledge-mode: manual
   application:
     name: template-server
   thymeleaf:
@@ -19,6 +33,14 @@ spring:
     mode: HTML5
     # 是否启用缓存
     cache: false
+mrshop:
+  static:
+    html:
+      path: F:\static-html\item
+#mrshop:
+#  static:
+#    html:
+#      path: F:\static-html\item #生成的html文件存储的路径,注意这个目录需要提前建好
 eureka:
   client:
     service-url:
