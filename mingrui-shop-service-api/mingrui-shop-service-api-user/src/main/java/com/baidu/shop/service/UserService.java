@@ -30,7 +30,7 @@ public interface UserService {
 
     @ApiOperation(value = "验证码校验")
     @GetMapping(value = "user/checkedValidCode")
-    Result<JSONObject> checkCode(@RequestBody String phone,String code);
+    Result<JSONObject> checkCode(String phone,String code);
 
 }
 
