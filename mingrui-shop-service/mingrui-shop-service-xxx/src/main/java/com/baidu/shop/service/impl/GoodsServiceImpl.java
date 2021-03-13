@@ -54,6 +54,15 @@ public class GoodsServiceImpl extends BaseApiService implements GoodsService {
     @Autowired
     private MrRabbitMQ mrRabbitMQ;
 
+
+    @Override
+    public Result<SkuEntity> getSkuById(Long skuId) {
+        SkuEntity skuEntity = skuMapper.selectByPrimaryKey(skuId);
+
+        return this.setResultSuccess(skuEntity);
+    }
+
+
     @Override
     public Result<JsonObject> goodsUpdown(@NotNull Integer spuId) {
         SpuEntity spuEntity = spuMapper.selectByPrimaryKey(spuId);

@@ -61,7 +61,8 @@ public class UserServiceImpl extends BaseApiService implements UserService {
     public Result<JSONObject> sendValidCode(UserDTO userDTO) {
         //生成随机6位验证码
         String code = (int)((Math.random() * 9 + 1) * 100000) + "";
-        //短信条数只有10条,不够我们测试.所以就不发送短信验证码了,直接在控制台打印就可以
+
+
         log.debug("向手机号码:{} 发送验证码:{}",userDTO.getPhone(),code);
         redisRepository.set("valid-code-" + userDTO.getPhone(),code);
         redisRepository.expire("valid-code-" + userDTO.getPhone(),60L);

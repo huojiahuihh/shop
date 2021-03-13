@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baidu.shop.base.Result;
 import com.baidu.shop.dto.SkuDTO;
 import com.baidu.shop.dto.SpuDTO;
+import com.baidu.shop.entity.SkuEntity;
 import com.baidu.shop.entity.SpuDetailEntity;
 import com.baidu.shop.validate.group.MingruiOperation;
 import com.google.gson.JsonArray;
@@ -50,4 +51,8 @@ public interface GoodsService {
     @DeleteMapping(value = "good/delete")
     //@RequestBody 来接收前端传递给后端的json字符串中的数据
     Result<JsonObject> deleteGoods(@NotNull Integer spuId);
+
+    @ApiOperation(value = "通过skuId查询sku信息")
+    @GetMapping(value = "/goods/getSkuById")
+    Result<SkuEntity> getSkuById(@RequestParam Long skuId);
 }

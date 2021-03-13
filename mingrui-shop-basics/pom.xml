@@ -15,6 +15,7 @@
         <module>mingrui-shop-basic-eureka-service</module>
         <module>mingrui-shop-basic-zuul-server</module>
         <module>mingrui-shop-basic-upload-server</module>
+        <module>mingrui-shop-basic-user-oauth</module>
     </modules>
 
 
