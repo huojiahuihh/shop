@@ -89,7 +89,6 @@ public class CarServiceImpl extends BaseApiService implements CarService {
         return this.setResultSuccess();
     }
 
-
     @Override
     public Result<List<Car>> getUserCar(String token) {
         List<Car> cars = new ArrayList<>();
@@ -105,5 +104,25 @@ public class CarServiceImpl extends BaseApiService implements CarService {
         }
         return this.setResultSuccess(cars);
     }
+
+    @Override
+    public Result<JSONObject> operationNum(String token, Integer type,Long skuId) {
+
+        try {
+            //获取当前登录用户
+            UserInfo userInfo = JwtUtils.getInfoFromToken(token, jwtConfig.getPublicKey());
+            Car redisCar = redisRepository.getHash(GOODS_CAR_PRE + userInfo.getId(), skuId + "", Car.class);
+            if (type ==1){
+                redisCar.setNum(redisCar.getNum() + 1);
+            }else {
+                redisCar.setNum(redisCar.getNum() - 1);
+            }
+            redisRepository.setHash(GOODS_CAR_PRE +userInfo.getId(),skuId + "",JSONUtil.toJsonString(redisCar));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return this.setResultSuccess();
+    }
+
 
 }

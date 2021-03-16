@@ -22,7 +22,7 @@ public class UserOauthServiceImpl implements UserOauthService {
 //    @Autowired
 //    private JwtConfig jwtConfig;
     @Override
-    public String login(UserEntity userEntity,JwtConfig jwtConfig) {
+    public String login(UserEntity userEntity, JwtConfig jwtConfig) {
         String token = null;
         //登录
         //通过账号查询

@@ -11,7 +11,9 @@
         <module name="mingrui-shop-common-oauth" />
         <module name="mingrui-shop-service-api-search" />
         <module name="mingrui-shop-service-search" />
+        <module name="mingrui-shop-service-api-order" />
         <module name="mingrui-shop-common-core" />
+        <module name="mingrui-shop-service-order" />
         <module name="mingrui-shop-service-api-car" />
         <module name="mingrui-shop-service-api-user" />
         <module name="mingrui-shop-service-api-xxx" />
@@ -39,11 +41,13 @@
       <module name="mingrui-shop-service" options="-parameters" />
       <module name="mingrui-shop-service-api" options="-parameters" />
       <module name="mingrui-shop-service-api-car" options="-parameters" />
+      <module name="mingrui-shop-service-api-order" options="-parameters" />
       <module name="mingrui-shop-service-api-search" options="-parameters" />
       <module name="mingrui-shop-service-api-template" options="-parameters" />
       <module name="mingrui-shop-service-api-user" options="-parameters" />
       <module name="mingrui-shop-service-api-xxx" options="-parameters" />
       <module name="mingrui-shop-service-car" options="-parameters" />
+      <module name="mingrui-shop-service-order" options="-parameters" />
       <module name="mingrui-shop-service-search" options="-parameters" />
       <module name="mingrui-shop-service-template" options="-parameters" />
       <module name="mingrui-shop-service-user" options="-parameters" />

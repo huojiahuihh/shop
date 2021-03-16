@@ -25,4 +25,8 @@ public interface CarService {
     @ApiOperation(value = "获取当前登录用户的购物车信息")
     @GetMapping(value = "car/getUserCar")
     Result<List<Car>> getUserCar(@CookieValue(value = "MRSHOP_TOKEN") String token);
+
+    @ApiOperation(value = "操作购物车列表的商品数量")
+    @GetMapping(value = "car/operationNum")
+    Result<JSONObject> operationNum(@CookieValue(value = "MRSHOP_TOKEN") String token, Integer type,Long skuId);
 }
