@@ -6,6 +6,7 @@ import com.baidu.shop.business.OrderService;
 import com.baidu.shop.config.JwtConfig;
 import com.baidu.shop.dto.Car;
 import com.baidu.shop.dto.OrderDTO;
+import com.baidu.shop.dto.OrderInfo;
 import com.baidu.shop.dto.UserInfo;
 import com.baidu.shop.entity.OrderDetailEntity;
 import com.baidu.shop.entity.OrderEntity;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
+import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -107,5 +109,24 @@ public class OrderServiceImpl extends BaseApiService implements OrderService {
             this.setResultError("用户实效");
         }
         return this.setResult(HTTPStatus.OK,"",orderId +"");
+    }
+
+    //根据订单id查询订单信息
+    @Override
+    public Result<OrderInfo> getOrderInfoByOrderId(Long orderId) {
+
+        OrderEntity orderEntity = orderMapper.selectByPrimaryKey(orderId);
+        OrderInfo orderInfo = BaiduBeanUtil.copyProperties(orderEntity, OrderInfo.class);
+
+        Example example = new Example(OrderDetailEntity.class);
+        example.createCriteria().andEqualTo("orderId",orderInfo.getOrderId());
+
+        List<OrderDetailEntity> orderDetailList = orderDetailMapper.selectByExample(example);
+        orderInfo.setOrderDetailList(orderDetailList);
+
+        OrderStatusEntity orderStatusEntity = orderStatusMapper.selectByPrimaryKey(orderInfo.getOrderId());
+
+        orderInfo.setOrderStatusEntity(orderStatusEntity);
+        return this.setResultSuccess(orderInfo);
     }
 }

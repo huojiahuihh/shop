@@ -15,6 +15,7 @@
         <module name="mingrui-shop-common-core" />
         <module name="mingrui-shop-service-order" />
         <module name="mingrui-shop-service-api-car" />
+        <module name="mingrui-shop-service-pay" />
         <module name="mingrui-shop-service-api-user" />
         <module name="mingrui-shop-service-api-xxx" />
         <module name="mingrui-shop-service-api-template" />
@@ -25,6 +26,7 @@
         <module name="mingrui-shop-basic-user-oauth" />
         <module name="mingrui-shop-basic-upload-server" />
         <module name="mingrui-shop-service-template" />
+        <module name="mingrui-shop-service-api-pay" />
       </profile>
     </annotationProcessing>
   </component>
@@ -42,12 +44,14 @@
       <module name="mingrui-shop-service-api" options="-parameters" />
       <module name="mingrui-shop-service-api-car" options="-parameters" />
       <module name="mingrui-shop-service-api-order" options="-parameters" />
+      <module name="mingrui-shop-service-api-pay" options="-parameters" />
       <module name="mingrui-shop-service-api-search" options="-parameters" />
       <module name="mingrui-shop-service-api-template" options="-parameters" />
       <module name="mingrui-shop-service-api-user" options="-parameters" />
       <module name="mingrui-shop-service-api-xxx" options="-parameters" />
       <module name="mingrui-shop-service-car" options="-parameters" />
       <module name="mingrui-shop-service-order" options="-parameters" />
+      <module name="mingrui-shop-service-pay" options="-parameters" />
       <module name="mingrui-shop-service-search" options="-parameters" />
       <module name="mingrui-shop-service-template" options="-parameters" />
       <module name="mingrui-shop-service-user" options="-parameters" />
