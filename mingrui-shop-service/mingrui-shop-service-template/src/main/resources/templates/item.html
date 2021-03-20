@@ -665,6 +665,7 @@
 						num:this.num
 					}).then(resp =>{
 						console.log(resp);
+						mrshop.store.set("goods",resp.data.data)
 						window.location.href ='../success-cart.html'
 					}).catch(error =>console.log(error))
 				}).catch(() =>{

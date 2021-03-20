@@ -39,11 +39,14 @@ public class CarServiceImpl extends BaseApiService implements CarService {
 
     @Override
     public Result<JSONObject> addCar(Car car, String token) {
+        //购物车
+        ArrayList<Object> objects = new ArrayList<>();
         try {
             UserInfo userInfo = JwtUtils.getInfoFromToken(token, jwtConfig.getPublicKey());
             //通过用户和商品id从购物车中获取数据
             //通过用户id和sku查询redis数据
             Car redisCar = redisRepository.getHash(GOODS_CAR_PRE + userInfo.getId(), car.getSkuId() + "", Car.class);
+            objects.add(redisCar);
             log.info("通过用户id : {} ,skuId : {} 从redis中获取到的数据为 : {}",userInfo.getId(),car.getSkuId(),redisCar);
             if (ObjectUtil.isNotNull(redisCar)){
                 //如果查询出来
@@ -71,7 +74,7 @@ public class CarServiceImpl extends BaseApiService implements CarService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return this.setResultSuccess();
+        return this.setResultSuccess(objects);
     }
 
     @Override
