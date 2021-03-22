@@ -16,6 +16,7 @@ import com.baidu.shop.utils.JwtUtils;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Example;
 
@@ -53,7 +54,7 @@ public class AddressesServiceImpl extends BaseApiService implements AddressesSer
         return this.setResultSuccess(addressesEntities);
     }
 
-    @Override
+    @Override //删除收货人信息
     public Result<JsonObject> delAddress(Integer id,String token) {
 
         try {
@@ -77,9 +78,8 @@ public class AddressesServiceImpl extends BaseApiService implements AddressesSer
         return this.setResultSuccess(cityEntities);
     }
 
-    @Override
+    @Override //新增收货地址
     public Result<JsonObject> saveAddress(AddressesDTO addressesDTO ,String token) {
-
         try {
             //获取当前登录用户
             UserInfo userInfo = JwtUtils.getInfoFromToken(token, jwtConfig.getPublicKey());
@@ -92,9 +92,8 @@ public class AddressesServiceImpl extends BaseApiService implements AddressesSer
         return this.setResultSuccess();
     }
 
-    @Override
+    @Override //修改收货地址
     public Result<JsonObject> editAddress(AddressesDTO addressesDTO, String token) {
-
         try {
             //获取当前登录用户
             UserInfo userInfo = JwtUtils.getInfoFromToken(token, jwtConfig.getPublicKey());
@@ -104,6 +103,24 @@ public class AddressesServiceImpl extends BaseApiService implements AddressesSer
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return this.setResultSuccess();
+    }
+
+    @Override
+    @Transactional
+    public Result<JsonObject> editDefaultAdd(AddressesEntity addressesEntity) {
+
+        Example example = new Example(AddressesEntity.class);
+        example.createCriteria().andEqualTo("defaultAdd",1);
+
+        List<AddressesEntity> addressesEntities = addressesMapper.selectByExample(example);
+
+        AddressesEntity addressesEntity1 = addressesEntities.get(0);
+        addressesEntity1.setDefaultAdd(0);
+        addressesMapper.updateByPrimaryKey(addressesEntity1);
+
+        addressesEntity.setDefaultAdd(1);
+        addressesMapper.updateByPrimaryKey(addressesEntity);
         return this.setResultSuccess();
     }
 

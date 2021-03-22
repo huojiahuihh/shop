@@ -37,6 +37,11 @@ public interface AddressesService {
     @PutMapping(value = "address/editAddress")
     Result<JsonObject> editAddress(@RequestBody AddressesDTO addressesDTO, @CookieValue(value = "MRSHOP_TOKEN") String token);
 
+    //设置默认地址
+    @ApiOperation(value = "设为默认地址")
+    @PutMapping(value = "address/editDefaultAdd")
+    Result<JsonObject> editDefaultAdd(@RequestBody AddressesEntity addressesEntity);
+
 
 
 }

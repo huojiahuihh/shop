@@ -129,4 +129,34 @@ public class OrderServiceImpl extends BaseApiService implements OrderService {
         orderInfo.setOrderStatusEntity(orderStatusEntity);
         return this.setResultSuccess(orderInfo);
     }
+
+    @Override
+    public Result<List<OrderInfo>> myOrder(String token) {
+        UserInfo userInfo = null;
+        try {
+            userInfo = JwtUtils.getInfoFromToken(token, jwtConfig.getPublicKey());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return this.setResultError("bzd");
+        }
+        Example example = new Example(OrderEntity.class);
+        example.createCriteria().andEqualTo("userId",userInfo.getId());
+        example.orderBy("createTime").desc();
+        List<OrderInfo> orderInfoList = orderMapper.selectByExample(example).stream().map(orderEntity -> {
+            OrderInfo orderInfo = BaiduBeanUtil.copyProperties(orderEntity, OrderInfo.class);
+            Example example1 = new Example(OrderDetailEntity.class);
+            example1.createCriteria().andEqualTo("orderId", orderInfo.getOrderId());
+            List<OrderDetailEntity> orderDetailEntities = orderDetailMapper.selectByExample(example1);
+            orderInfo.setOrderDetailList(orderDetailEntities);
+            Example example2 = new Example(OrderStatusEntity.class);
+            example2.createCriteria().andEqualTo("orderId", orderInfo.getOrderId());
+            List<OrderStatusEntity> orderStatusEntities = orderStatusMapper.selectByExample(example2);
+            orderInfo.setOrderStatusEntity(orderStatusEntities.get(0));
+            return orderInfo;
+        }).collect(Collectors.toList());
+
+        return this.setResultSuccess(orderInfoList);
+    }
+
+
 }
